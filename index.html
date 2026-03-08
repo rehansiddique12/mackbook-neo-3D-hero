@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MacBook Neo — Beyond Limits</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #c9a96e;
+            --gold-light: #e8c98a;
+            --gold-dark: #8a6d3f;
+            --obsidian: #080808;
+            --charcoal: #111111;
+            --silver: #a8a8b3;
+            --white: #f0ede8;
+            --accent: #4a9eff;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--obsidian);
+            color: var(--white);
+            font-family: 'Syne', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+            mix-blend-mode: difference;
+        }
+        .cursor-ring {
+            position: fixed;
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(201,169,110,0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+        }
+        .cursor-ring.hover { width: 60px; height: 60px; opacity: 0.6; }
+
+        /* Noise Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9997;
+            opacity: 0.4;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 28px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            mix-blend-mode: normal;
+        }
+        nav::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 60px;
+            right: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(201,169,110,0.3), transparent);
+        }
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            color: var(--white);
+            text-transform: uppercase;
+        }
+        .nav-logo span { color: var(--gold); }
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+        .nav-links a {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            color: var(--silver);
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--gold);
+            transition: width 0.3s ease;
+        }
+        .nav-links a:hover { color: var(--gold); }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-cta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            color: var(--obsidian);
+            background: var(--gold);
+            border: none;
+            padding: 10px 24px;
+            text-transform: uppercase;
+            cursor: none;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+        /* ── HERO ── */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 700vh;
+        }
+        .hero-sticky {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        canvas#frame {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Cinematic Vignette */
+        .vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(8,8,8,0.7) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: absolute;
+            z-index: 10;
+            text-align: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -55%);
+        }
+        .hero-eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.35em;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: fadeUp 1s 0.3s forwards ease;
+        }
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(72px, 10vw, 148px);
+            font-weight: 300;
+            line-height: 0.9;
+            letter-spacing: -0.02em;
+            color: var(--white);
+            opacity: 0;
+            animation: fadeUp 1s 0.5s forwards ease;
+        }
+        .hero-title em {
+            font-style: italic;
+            color: var(--gold);
+        }
+        .hero-subtitle {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            color: var(--silver);
+            margin-top: 28px;
+            opacity: 0;
+            animation: fadeUp 1s 0.7s forwards ease;
+        }
+        .hero-scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            animation: fadeUp 1s 1.2s forwards ease;
+        }
+        .hero-scroll-hint span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.3em;
+            color: var(--silver);
+            text-transform: uppercase;
+        }
+        .scroll-line {
+            width: 1px;
+            height: 50px;
+            background: linear-gradient(to bottom, var(--gold), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; transform: scaleY(0.7); }
+            50% { opacity: 1; transform: scaleY(1); }
+        }
+
+        /* ── MARQUEE ── */
+        .marquee-section {
+            background: var(--gold);
+            padding: 18px 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 5;
+        }
+        .marquee-track {
+            display: flex;
+            gap: 60px;
+            animation: marquee 20s linear infinite;
+            white-space: nowrap;
+        }
+        .marquee-track span {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: var(--obsidian);
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .marquee-track span.dot { color: rgba(8,8,8,0.4); }
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* ── SECTIONS ── */
+        section {
+            position: relative;
+        }
+
+        /* Intro */
+        .intro {
+            padding: 160px 160px;
+            background: var(--charcoal);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+        .intro-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 240px;
+            font-weight: 300;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(201,169,110,0.15);
+            line-height: 1;
+            user-select: none;
+        }
+        .intro-text h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(40px, 5vw, 72px);
+            font-weight: 300;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+        .intro-text h2 em { font-style: italic; color: var(--gold); }
+        .intro-text p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--silver);
+            margin-bottom: 40px;
+            max-width: 440px;
+        }
+        .gold-line {
+            width: 60px;
+            height: 1px;
+            background: var(--gold);
+            margin-bottom: 24px;
+        }
+        .label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.3em;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* Features Grid */
+        .features {
+            padding: 160px 60px;
+            background: var(--obsidian);
+        }
+        .features-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 80px;
+        }
+        .features-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(42px, 5vw, 80px);
+            font-weight: 300;
+            line-height: 1;
+        }
+        .features-header h2 em { font-style: italic; color: var(--gold); }
+        .features-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--silver);
+            letter-spacing: 0.1em;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+        .feature-card {
+            background: var(--charcoal);
+            padding: 52px 44px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s ease;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(201,169,110,0.05) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-card:hover { transform: translateY(-4px); }
+        .feature-card .card-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--gold-dark);
+            letter-spacing: 0.2em;
+            margin-bottom: 40px;
+        }
+        .feature-card .card-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 28px;
+            opacity: 0.8;
+        }
+        .feature-card h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 30px;
+            font-weight: 400;
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+        .feature-card p {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--silver);
+        }
+        .feature-card .card-border {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            transition: width 0.5s ease;
+        }
+        .feature-card:hover .card-border { width: 100%; }
+
+        /* Specs */
+        .specs {
+            padding: 160px 60px;
+            background: var(--charcoal);
+        }
+        .specs-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .specs h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(42px, 5vw, 72px);
+            font-weight: 300;
+            margin-bottom: 80px;
+            text-align: center;
+        }
+        .specs h2 em { font-style: italic; color: var(--gold); }
+        .specs-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+        .spec-item {
+            padding: 32px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 40px;
+            align-items: center;
+            position: relative;
+            transition: padding-left 0.3s ease;
+        }
+        .spec-item:nth-child(odd) { padding-right: 60px; }
+        .spec-item:nth-child(even) { padding-left: 60px; border-left: 1px solid rgba(255,255,255,0.06); }
+        .spec-item:hover { padding-left: 16px; }
+        .spec-item:nth-child(even):hover { padding-left: 76px; }
+        .spec-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+        .spec-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 300;
+            color: var(--white);
+        }
+
+        /* Cinematic CTA */
+        .cta-section {
+            position: relative;
+            padding: 200px 60px;
+            background: var(--obsidian);
+            overflow: hidden;
+            text-align: center;
+        }
+        .cta-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201,169,110,0.08) 0%, transparent 70%);
+        }
+        .cta-section .cta-label { margin-bottom: 24px; }
+        .cta-section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(56px, 8vw, 120px);
+            font-weight: 300;
+            line-height: 0.95;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .cta-section h2 em { font-style: italic; color: var(--gold); }
+        .cta-section p {
+            font-size: 16px;
+            color: var(--silver);
+            max-width: 480px;
+            margin: 0 auto 60px;
+            line-height: 1.8;
+        }
+        .btn-group { display: flex; gap: 20px; justify-content: center; }
+        .btn-unit-group { display: flex; gap: 20px; justify-content: start; }
+        .btn-primary {
+            display: inline-block;
+            padding: 18px 52px;
+            background: var(--gold);
+            color: var(--obsidian);
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            cursor: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--gold-light);
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+        .btn-primary:hover::before { transform: translateX(0); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 20px 60px rgba(201,169,110,0.3); }
+        .btn-primary span { position: relative; z-index: 1; }
+        .btn-ghost {
+            display: inline-block;
+            padding: 17px 52px;
+            border: 1px solid rgba(201,169,110,0.4);
+            color: var(--white);
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: border-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            cursor: none;
+        }
+        .btn-ghost:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        /* Price Tag */
+        .price-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid rgba(201,169,110,0.3);
+            padding: 16px 32px;
+            margin-bottom: 48px;
+        }
+        .price-badge span:first-child {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--silver);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+        .price-badge span:last-child {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 400;
+            color: var(--gold);
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px;
+            background: var(--obsidian);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        footer .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            color: var(--white);
+            text-transform: uppercase;
+        }
+        footer .logo span { color: var(--gold); }
+        footer p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: rgba(168,168,179,0.4);
+            letter-spacing: 0.1em;
+        }
+
+        /* Reveal animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        .reveal-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Horizontal rule gold */
+        .gold-hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 0;
+            opacity: 0.4;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--obsidian); }
+        ::-webkit-scrollbar-thumb { background: var(--gold-dark); }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- NAV -->
+    <nav id="nav">
+        <div class="nav-logo">Mac<span>Book</span> Neo</div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#specs">Specs</a></li>
+            <li><a href="#order">Order</a></li>
+        </ul>
+        <button class="nav-cta">Configure</button>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-sticky">
+            <canvas id="frame"></canvas>
+            <div class="vignette"></div>
+            <div class="hero-content">
+                <span class="hero-eyebrow">Apple Silicon · M4 Ultra · 2025</span>
+                <h1 class="hero-title">Mac<em>Book</em><br>Neo</h1>
+                <p class="hero-subtitle">Engineered for those who demand everything.</p>
+            </div>
+            <div class="hero-scroll-hint">
+                <span>Scroll to explore</span>
+                <div class="scroll-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MARQUEE -->
+    <div class="marquee-section">
+        <div class="marquee-track" id="marquee">
+            <span>MacBook Neo</span><span class="dot">✦</span>
+            <span>M4 Silicon</span><span class="dot">✦</span>
+            <span>32GB Memory</span><span class="dot">✦</span>
+            <span>2TB Storage</span><span class="dot">✦</span>
+            <span>Liquid Retina XDR</span><span class="dot">✦</span>
+            <span>All-Day Battery</span><span class="dot">✦</span>
+            <span>MacBook Neo</span><span class="dot">✦</span>
+            <span>M4 Silicon</span><span class="dot">✦</span>
+            <span>32GB Memory</span><span class="dot">✦</span>
+            <span>2TB Storage</span><span class="dot">✦</span>
+            <span>Liquid Retina XDR</span><span class="dot">✦</span>
+            <span>All-Day Battery</span><span class="dot">✦</span>
+        </div>
+    </div>
+
+    <!-- INTRO -->
+    <section class="intro">
+        <img src="imge/02.webp" class="reveal" style="border-radius: 20px; width: 700px; height: 500px;" alt="">
+        <div class="intro-text reveal">
+            <span class="label">The Vision</span>
+            <div class="gold-line"></div>
+            <h2>Designed to be<br><em>extraordinary</em></h2>
+            <p style="text-align: justify;">The MacBook Neo doesn't just evolve the laptop — it redefines it. Every curve, every pixel, every millisecond of performance has been obsessively crafted for those who refuse to compromise.</p>
+            <p>This is not a tool. It is an instrument of creation.</p>
+            <div class="btn-unit-group reveal" style="transition-delay:0.2s">
+            <a href="#" class="btn-ghost">Learn More</a>
+        </div>
+        </div>
+        
+    </section>
+
+    <hr class="gold-hr">
+
+    <!-- FEATURES -->
+    <section class="features" id="features">
+        <div class="features-header reveal">
+            <h2>Built<br><em>Different</em></h2>
+            <span class="features-meta">/ 06 core features</span>
+        </div>
+        <div class="features-grid">
+            <!-- 01 -->
+            <div class="feature-card">
+                <div class="card-number">01 — Display</div>
+                <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="#c9a96e" stroke-width="1.2">
+                    <rect x="4" y="8" width="40" height="28" rx="2"/>
+                    <path d="M16 40h16M24 36v4"/>
+                </svg>
+                <h3>Edge-to-Edge<br>Liquid Retina</h3>
+                <p>1,000,000:1 contrast ratio. ProMotion 120Hz. HDR with 1600 nits peak brightness. See everything exactly as the creator intended.</p>
+                <div class="card-border"></div>
+            </div>
+            <!-- 02 -->
+            <div class="feature-card">
+                <div class="card-number">02 — Performance</div>
+                <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="#c9a96e" stroke-width="1.2">
+                    <polygon points="24,4 44,40 4,40"/>
+                    <line x1="24" y1="16" x2="24" y2="28"/>
+                    <circle cx="24" cy="33" r="1.5" fill="#c9a96e"/>
+                </svg>
+                <h3>M4 Silicon<br>Redefined</h3>
+                <p>The most powerful chip ever in a laptop. Neural Engine processes 38 trillion operations per second. Effortlessly handle anything you create.</p>
+                <div class="card-border"></div>
+            </div>
+            <!-- 03 -->
+             <div class="feature-card">
+                <div class="card-number">03 — Performance</div>
+                <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="#c9a96e" stroke-width="1.2">
+                    <circle cx="24" cy="24" r="18"/>
+                    <circle cx="24" cy="24" r="8"/>
+                    <line x1="24" y1="6" x2="24" y2="16"/>
+                    <line x1="24" y1="32" x2="24" y2="42"/>
+                    <line x1="6" y1="24" x2="16" y2="24"/>
+                    <line x1="32" y1="24" x2="42" y2="24"/>
+                </svg>
+                <h3>M4 Silicon<br>Redefined</h3>
+                <p>The most powerful chip ever in a laptop. Neural Engine processes 38 trillion operations per second. Effortlessly handle anything you create.</p>
+                <div class="card-border"></div>
+            </div>
+            <!-- 04 -->
+            <div class="feature-card">
+                <div class="card-number">04 — Battery</div>
+                <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="#c9a96e" stroke-width="1.2">
+                    <rect x="6" y="14" width="34" height="20" rx="3"/>
+                    <path d="M40 20v8"/>
+                    <line x1="14" y1="24" x2="22" y2="18"/><line x1="22" y1="18" x2="22" y2="24"/><line x1="22" y1="24" x2="30" y2="18"/>
+                </svg>
+                <h3>22-Hour<br>All-Day Power</h3>
+                <p>Engineered for endurance. A single charge takes you through full studio sessions, cross-continent flights, and everything in between.</p>
+                <div class="card-border"></div>
+            </div>
+            <!-- 05 -->
+            <div class="feature-card">
+                <div class="card-number">05 — Audio</div>
+                <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="#c9a96e" stroke-width="1.2">
+                    <path d="M8 18h6l8-10v32l-8-10H8z"/>
+                    <path d="M34 16a12 12 0 010 16"/>
+                    <path d="M39 11a20 20 0 010 26"/>
+                </svg>
+                <h3>6-Speaker<br>Spatial Audio</h3>
+                <p>Force-cancelling woofers and precision tweeters deliver concert-hall clarity. Spatial Audio with dynamic head tracking makes every listen immersive.</p>
+                <div class="card-border"></div>
+            </div>
+            <!-- 06 -->
+            <div class="feature-card">
+                <div class="card-number">06 — Security</div>
+                <svg class="card-icon" viewBox="0 0 48 48" fill="none" stroke="#c9a96e" stroke-width="1.2">
+                    <path d="M24 4l16 6v14c0 10-7 18-16 22C15 42 8 34 8 24V10z"/>
+                    <path d="M17 24l5 5 9-10"/>
+                </svg>
+                <h3>Touch ID &amp;<br>Secure Enclave</h3>
+                <p>Your fingerprint unlocks in an instant. The Secure Enclave keeps your data encrypted and protected — even from Apple itself.</p>
+                <div class="card-border"></div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="gold-hr">
+
+
+    <!-- SPECS -->
+    <section class="specs" id="specs">
+        <div class="specs-inner">
+            <h2 class="reveal">Technical<br><em>Excellence</em></h2>
+            <div class="specs-list">
+                <div class="spec-item reveal">
+                    <span class="spec-label">Processor</span>
+                    <span class="spec-value">Apple M4 Silicon</span>
+                </div>
+                <div class="spec-item reveal" style="transition-delay:0.05s">
+                    <span class="spec-label">Display</span>
+                    <span class="spec-value">16" Liquid Retina XDR</span>
+                </div>
+                <div class="spec-item reveal" style="transition-delay:0.1s">
+                    <span class="spec-label">Memory</span>
+                    <span class="spec-value">Up to 32GB Unified</span>
+                </div>
+                <div class="spec-item reveal" style="transition-delay:0.15s">
+                    <span class="spec-label">Storage</span>
+                    <span class="spec-value">Up to 2TB NVMe SSD</span>
+                </div>
+                <div class="spec-item reveal" style="transition-delay:0.2s">
+                    <span class="spec-label">Battery</span>
+                    <span class="spec-value">22 Hours All-Day</span>
+                </div>
+                <div class="spec-item reveal" style="transition-delay:0.25s">
+                    <span class="spec-label">Connectivity</span>
+                    <span class="spec-value">Thunderbolt 4 / Wi-Fi 6E</span>
+                </div>
+                <div class="spec-item reveal" style="transition-delay:0.3s">
+                    <span class="spec-label">Camera</span>
+                    <span class="spec-value">12MP FaceTime Ultra HD</span>
+                </div>
+                <div class="spec-item reveal" style="transition-delay:0.35s">
+                    <span class="spec-label">Audio</span>
+                    <span class="spec-value">6-Speaker Sound System</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="gold-hr">
+
+    <!-- CTA -->
+    <section class="cta-section" id="order">
+        <div class="cta-bg"></div>
+        <span class="label cta-label">Limited Availability</span>
+        <h2 class="reveal">Own the<br><em>Future</em></h2>
+        <p class="reveal" style="transition-delay:0.1s">The MacBook Neo. Not for everyone. For those who see what others cannot yet imagine.</p>
+        <div class="price-badge reveal" style="transition-delay:0.15s">
+            <span>Starting from</span>
+            <span>$2,499</span>
+        </div>
+        <div class="btn-group reveal" style="transition-delay:0.2s">
+            <a href="#" class="btn-primary"><span>Order Now</span></a>
+            <a href="#" class="btn-ghost">Learn More</a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="logo">Mac<span>Book</span> Neo</div>
+        <p>© 2025 Apple Inc. All rights reserved.</p>
+        <p>Privacy Policy · Legal · Sitemap</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"
+        integrity="sha512-NcZdtrT77bJr4STcmsGAESr06BYGE8woZdSdEgqnpyqac7sugNO+Tr4bGwGF3MsnEkGKhU2KL2xh6Ec+BqsaHA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+
+    <script>
+        // ── Cursor ──
+        const cursor = document.getElementById('cursor');
+        const cursorRing = document.getElementById('cursorRing');
+        let mx = 0, my = 0, rx = 0, ry = 0;
+
+        document.addEventListener('mousemove', e => {
+            mx = e.clientX; my = e.clientY;
+            cursor.style.left = mx - 4 + 'px';
+            cursor.style.top = my - 4 + 'px';
+        });
+
+        function animateRing() {
+            rx += (mx - rx - 18) * 0.12;
+            ry += (my - ry - 18) * 0.12;
+            cursorRing.style.left = rx + 'px';
+            cursorRing.style.top = ry + 'px';
+            requestAnimationFrame(animateRing);
+        }
+        animateRing();
+
+        document.querySelectorAll('a, button, .feature-card').forEach(el => {
+            el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
+        });
+
+        // ── Nav scroll effect ──
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 80) {
+                nav.style.background = 'rgba(8,8,8,0.92)';
+                nav.style.backdropFilter = 'blur(20px)';
+            } else {
+                nav.style.background = 'transparent';
+                nav.style.backdropFilter = 'none';
+            }
+        });
+
+        // ── Canvas Frame Animation ──
+        const canvas = document.querySelector("canvas");
+        const context = canvas.getContext("2d");
+        const frames = { currentIndex: 0, maxIndex: 41 };
+        let imagesLoaded = 0;
+        const images = [];
+
+        // Placeholder gradient animation if no frames folder
+        function drawPlaceholder(progress) {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const w = canvas.width, h = canvas.height;
+
+            // Background
+            context.fillStyle = '#080808';
+            context.fillRect(0, 0, w, h);
+
+            // Rotating gold rings
+            const cx = w / 2, cy = h / 2;
+            const t = progress * Math.PI * 2;
+            const baseR = Math.min(w, h) * 0.25;
+
+            for (let i = 3; i >= 0; i--) {
+                const r = baseR + i * 40;
+                const alpha = (0.08 - i * 0.015) + Math.sin(t + i) * 0.02;
+                context.beginPath();
+                context.arc(cx, cy, r, 0, Math.PI * 2);
+                context.strokeStyle = `rgba(201,169,110,${alpha})`;
+                context.lineWidth = 1;
+                context.stroke();
+            }
+
+            // Laptop silhouette (stylized)
+            const lw = w * 0.55;
+            const lh = lw * 0.62;
+            const lx = cx - lw / 2;
+            const ly = cy - lh / 2 + Math.sin(t * 0.5) * 8;
+            const lidAngle = Math.PI * (0.15 + progress * 0.85);
+
+            context.save();
+            context.translate(cx, ly + lh);
+
+            // Base
+            const baseH = lh * 0.06;
+            const gBase = context.createLinearGradient(0, -baseH, 0, 0);
+            gBase.addColorStop(0, '#1a1a1a');
+            gBase.addColorStop(1, '#0d0d0d');
+            context.beginPath();
+            context.roundRect(-lw / 2, -baseH, lw, baseH, [0, 0, 6, 6]);
+            context.fillStyle = gBase;
+            context.fill();
+            context.strokeStyle = 'rgba(201,169,110,0.2)';
+            context.lineWidth = 0.5;
+            context.stroke();
+
+            // Lid
+            context.save();
+            context.translate(0, -baseH);
+            context.rotate(-lidAngle);
+            const lidH = lh * 0.94;
+            const gLid = context.createLinearGradient(0, -lidH, 0, 0);
+            gLid.addColorStop(0, '#202020');
+            gLid.addColorStop(1, '#141414');
+            context.beginPath();
+            context.roundRect(-lw / 2, -lidH, lw, lidH, [8, 8, 0, 0]);
+            context.fillStyle = gLid;
+            context.fill();
+            context.strokeStyle = 'rgba(201,169,110,0.15)';
+            context.lineWidth = 0.5;
+            context.stroke();
+
+            // Screen glow
+            if (lidAngle > 0.4) {
+                const screenAlpha = Math.min(1, (lidAngle - 0.4) / 1.0);
+                const innerPad = 18;
+                const gScreen = context.createRadialGradient(0, -lidH/2, 10, 0, -lidH/2, lw/2);
+                gScreen.addColorStop(0, `rgba(74,158,255,${0.4 * screenAlpha})`);
+                gScreen.addColorStop(0.5, `rgba(74,120,255,${0.15 * screenAlpha})`);
+                gScreen.addColorStop(1, `rgba(0,0,0,${0.95})`);
+                context.beginPath();
+                context.roundRect(-lw/2 + innerPad, -lidH + innerPad, lw - innerPad*2, lidH - innerPad*2 - 10, 4);
+                context.fillStyle = gScreen;
+                context.fill();
+
+                // Apple logo glow
+                context.beginPath();
+                context.arc(0, -lidH * 0.5, 16, 0, Math.PI * 2);
+                context.fillStyle = `rgba(201,169,110,${0.12 * screenAlpha})`;
+                context.fill();
+            }
+
+            context.restore();
+            context.restore();
+
+            // Gold shimmer
+            const gs = context.createLinearGradient(cx - lw/2, 0, cx + lw/2, 0);
+            const shimmerPos = (progress + Date.now() / 3000) % 1;
+            gs.addColorStop(Math.max(0, shimmerPos - 0.1), 'transparent');
+            gs.addColorStop(shimmerPos, 'rgba(201,169,110,0.05)');
+            gs.addColorStop(Math.min(1, shimmerPos + 0.1), 'transparent');
+            context.fillStyle = gs;
+            context.fillRect(0, 0, w, h);
+        }
+
+        function preloaderImages() {
+            for (let i = 1; i <= frames.maxIndex; i++) {
+                const img = new Image();
+                img.src = `./frames/ezgif-frame-${i.toString().padStart(3, "0")}.png`;
+                img.onload = () => {
+                    imagesLoaded++;
+                    if (imagesLoaded === frames.maxIndex) {
+                        loadImage(frames.currentIndex);
+                        startImageAnimation();
+                    }
+                };
+                img.onerror = () => { imagesLoaded++; };
+                images.push(img);
+            }
+            // Start placeholder immediately
+            startPlaceholderAnimation();
+        }
+
+        let placeholderRAF;
+        let scrollProgress = 0;
+
+        function startPlaceholderAnimation() {
+            function loop() {
+                if (imagesLoaded < frames.maxIndex) {
+                    drawPlaceholder(scrollProgress);
+                    placeholderRAF = requestAnimationFrame(loop);
+                }
+            }
+            loop();
+        }
+
+        function loadImage(index) {
+            if (index >= 0 && index < images.length && images[index].complete && images[index].naturalWidth > 0) {
+                const img = images[index];
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                const scaleX = canvas.width / img.width;
+                const scaleY = canvas.height / img.height;
+                const scale = Math.max(scaleX, scaleY);
+                const nw = img.width * scale, nh = img.height * scale;
+                const ox = (canvas.width - nw) / 2, oy = (canvas.height - nh) / 2;
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.imageSmoothingEnabled = true;
+                context.imageSmoothingQuality = "high";
+                context.drawImage(img, ox, oy, nw, nh);
+                frames.currentIndex = index;
+            }
+        }
+
+        function startImageAnimation() {
+            cancelAnimationFrame(placeholderRAF);
+            gsap.registerPlugin(ScrollTrigger);
+            gsap.timeline({
+                scrollTrigger: {
+                    trigger: ".hero",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: 2,
+                    onUpdate: self => {
+                        scrollProgress = self.progress;
+                        loadImage(Math.floor(self.progress * frames.maxIndex));
+                    }
+                }
+            }).to(frames, {
+                currentIndex: frames.maxIndex,
+                onUpdate: () => loadImage(Math.floor(frames.currentIndex))
+            });
+        }
+
+        preloaderImages();
+
+        // Scroll-driven placeholder
+        window.addEventListener('scroll', () => {
+            const heroEl = document.querySelector('.hero');
+            const max = heroEl.offsetHeight - window.innerHeight;
+            scrollProgress = Math.min(1, window.scrollY / max);
+        });
+
+        // ── GSAP Scroll Animations ──
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Reveal on scroll
+        const revealEls = document.querySelectorAll('.reveal, .reveal-left');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('visible'), i * 40);
+                }
+            });
+        }, { threshold: 0.15 });
+        revealEls.forEach(el => observer.observe(el));
+
+        // Parallax on intro number
+        gsap.to('.intro-number', {
+            y: -80,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.intro',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+
+        // Feature cards stagger
+        gsap.from('.feature-card', {
+            y: 60,
+            opacity: 0,
+            duration: 0.9,
+            stagger: 0.15,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: '.features-grid',
+                // start: 'top 75%'
+            }
+        });
+
+        // CTA background pulse
+        gsap.to('.cta-bg', {
+            scale: 1.2,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.cta-section',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+
+        // Window resize
+        window.addEventListener('resize', () => {
+            if (imagesLoaded >= frames.maxIndex) {
+                loadImage(frames.currentIndex);
+            } else {
+                drawPlaceholder(scrollProgress);
+            }
+        });
+    </script>
+</body>
+</html>
